@@ -125,6 +125,7 @@ class YOLOXHead(nn.Module):
         self.use_l1 = False
         self.l1_loss = nn.L1Loss(reduction="none")
         self.bcewithlog_loss = nn.BCEWithLogitsLoss(reduction="none")
+        self.bcewithlog_loss2 = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([7.629716981132075, 2.5496701590997284, 1.7749127862884877, 5.04393789230261, 12.058529621698787]), reduction="none")
         self.iou_loss = IOUloss(reduction="none")
         self.strides = strides
         self.grids = [torch.zeros(1)] * len(in_channels)
@@ -395,7 +396,7 @@ class YOLOXHead(nn.Module):
             self.bcewithlog_loss(obj_preds.view(-1, 1), obj_targets)
         ).sum() / num_fg
         loss_cls = (
-            self.bcewithlog_loss(
+            self.bcewithlog_loss2(
                 cls_preds.view(-1, self.num_classes)[fg_masks], cls_targets
             )
         ).sum() / num_fg
